@@ -28,5 +28,5 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          dockerfile: ./example/Dockerfile
+          file: ./example/Dockerfile
           tags: amieldelatorre/test-repo:test
