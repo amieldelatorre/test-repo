@@ -1,6 +1,11 @@
 name: build
 
-on: ["push", "pull_request", "workflow_call"]
+on: 
+  push:
+    tags-ignore:
+      - '**'
+  pull_request:
+  workflow_call:
 
 jobs:
   docker-build:
