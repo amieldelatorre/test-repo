@@ -42,12 +42,14 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
       - name: Update release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" --title="$TAG"
-          # gh release create "$TAG" --title="$TAG" --notes-file ./CHANGELOG.md
+        run: gh release create "$TAG" --title="$TAG" --notes-file ./CHANGELOG.md
         # run: |
         #   pwd
         #   gh release create "$TAG" \
