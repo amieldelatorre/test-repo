@@ -47,6 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
         run: |
+          pwd
           gh release create "$TAG" \
             --title="$TAG"
             --repo="$GITHUB_REPOSITORY" \
