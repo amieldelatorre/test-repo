@@ -46,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
-        run: echo "$TAG"
+        run: gh release create "$TAG" --title="$TAG" --notes-file ./CHANGELOG.md
         # run: |
         #   pwd
         #   gh release create "$TAG" \
