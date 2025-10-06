@@ -112,7 +112,17 @@ jobs:
           tags_list_amd64=(${{ steps.metadata-amd64.outputs.tags }})
           tags_list_unified=(${{ steps.metadata-unified.outputs.tags }})
 
-          docker buildx imagetools create --tag "${tags_list_unified[@]}" "${tags_list_arm64[@]}" "${tags_list_amd64[@]}"
+          cmd=(docker buildx imagetools create)
+          for tag in "${tags_list_unified[@]}"; do
+            cmd+=(--tag "${tag}")
+          done
+
+          cmd+=("${tags_list_arm64[@]}")
+          cmd+=("${tags_list_amd64[@]}")
+          echo "Final command:"
+          echo "    ${cmd}"
+
+          "${cmd[@]}"
 
       # - name: Create and push multi-platform manifest
       #   run: |
