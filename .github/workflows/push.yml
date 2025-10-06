@@ -108,6 +108,8 @@ jobs:
 
       - name: Create and push multi-platform manifest
         run: |
+          echo "waiting for registry to update"
+          sleep 30
           tags_list_arm64=(${{ steps.metadata-arm64.outputs.tags }})
           tags_list_amd64=(${{ steps.metadata-amd64.outputs.tags }})
           tags_list_unified=(${{ steps.metadata-unified.outputs.tags }})
