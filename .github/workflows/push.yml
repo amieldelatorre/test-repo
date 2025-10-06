@@ -41,6 +41,7 @@ jobs:
           #   type=semver,pattern={{version}}
           #   type=raw,value=latest
           flavor: |
+            latest=true
             suffix=-amd64
 
       # - name: Build and push
@@ -68,6 +69,7 @@ jobs:
           #   type=semver,pattern={{version}}
           #   type=raw,value=latest
           flavor: |
+            latest=true
             suffix=-arm64
 
       # - name: Build and push
