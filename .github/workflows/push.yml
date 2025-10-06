@@ -41,6 +41,7 @@ jobs:
             type=ref,event=tag
             type=raw,value=latest-amd64
           flavor: |
+            latest=false
             suffix=-amd64
 
       # - name: Build and push
@@ -68,6 +69,7 @@ jobs:
             type=ref,event=tag
             type=raw,value=latest-arm64
           flavor: |
+            latest=false
             suffix=-arm64
 
       # - name: Build and push
