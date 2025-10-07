@@ -162,12 +162,14 @@ jobs:
           cmd+=("${tags_list_amd64[@]}")
           cmd+=("${tags_list_arm64[@]}")
           echo "Final command:"
-          echo "    '${cmd}'"
+          echo "    '${cmd[@]}'"
 
           "${cmd[@]}"
 
       - name: Inspect image
         run: |
+          echo "Inspecting images"
           for tag in "${tags_list_unified[@]}"; do
+            echo "docker buildx imagetools inspect ${tag}"
             docker buildx imagetools inspect "${tag}"
           done
