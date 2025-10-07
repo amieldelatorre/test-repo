@@ -54,7 +54,9 @@ jobs:
           - amd64
           - arm64
     outputs:
-      docker-platform-arch-${{ matrix.docker-platform-arch }}-tags: ${{ steps.meta.outputs.tags }}
+      docker-platform-arch-amd64-tags: ${{ steps.output.outputs.docker-platform-arch-amd64-tags }}
+      docker-platform-arch-arm64-tags: ${{ steps.output.outputs.docker-platform-arch-arm64-tags }}
+
     permissions:
       contents: read
       packages: write
@@ -107,6 +109,11 @@ jobs:
           subject-name: ${{ env.FULL_IMAGE_NAME }}
           subject-digest: ${{ steps.meta.outputs.digest }}
           push-to-registry: true
+
+      - name: output
+        id: output
+        run:
+          echo "docker-platform-arch-${{ matrix.docker-platform-arch }}-tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
 
   build_multi_arch_image:
     needs: [build_images]
