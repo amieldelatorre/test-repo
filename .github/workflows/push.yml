@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 10
     outputs:
       tag_version: ${{ steps.add_version.outputs.version }}
-      latest_commit: ${{ steps.add_version }}
+      latest_commit: ${{ steps.add_version.outputs.latest_commit }}
 
     steps:
       - name: Checkout
@@ -42,7 +42,6 @@ jobs:
 
           echo "::set-output name=tag_version::${version}"
           echo "::set-output name=latest_commit::${latest_commit}"
-
 
   build_images:
     needs: [add_version_information]
@@ -112,8 +111,7 @@ jobs:
 
       - name: output
         id: output
-        run:
-          echo "docker-platform-arch-${{ matrix.docker-platform-arch }}-tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
+        run: echo "docker-platform-arch-${{ matrix.docker-platform-arch }}-tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
 
   build_multi_arch_image:
     needs: [build_images]
@@ -174,103 +172,102 @@ jobs:
 
   # new_tag:
 
+  # - name: Docker metadata amd64
+  #   id: metadata-amd64
+  #   uses: docker/metadata-action@v5
+  #   with:
+  #     images: ${{ env.FULL_IMAGE_NAME }}
+  #     tags: |
+  #       type=ref,event=tag
+  #       type=raw,value=latest
+  #     flavor: |
+  #       latest=false
+  #       suffix=-amd64
 
-      # - name: Docker metadata amd64
-      #   id: metadata-amd64
-      #   uses: docker/metadata-action@v5
-      #   with:
-      #     images: ${{ env.FULL_IMAGE_NAME }}
-      #     tags: |
-      #       type=ref,event=tag
-      #       type=raw,value=latest
-      #     flavor: |
-      #       latest=false
-      #       suffix=-amd64
+  # - name: Build and push
+  #   id: push-amd64
+  #   uses: docker/build-push-action@v5
+  #   with:
+  #     context: ./example
+  #     platforms: linux/amd64
+  #     push: true
+  #     tags: ${{ steps.metadata-amd64.outputs.tags }}
 
-      # - name: Build and push
-      #   id: push-amd64
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: ./example
-      #     platforms: linux/amd64
-      #     push: true
-      #     tags: ${{ steps.metadata-amd64.outputs.tags }}
+  # - name: Generate Artifact Attestation
+  #   uses: actions/attest-build-provenance@v2
+  #   with:
+  #     subject-name: ${{ env.FULL_IMAGE_NAME }}
+  #     subject-digest: ${{ steps.push-amd64.outputs.digest }}
+  #     push-to-registry: true
 
-      # - name: Generate Artifact Attestation
-      #   uses: actions/attest-build-provenance@v2
-      #   with:
-      #     subject-name: ${{ env.FULL_IMAGE_NAME }}
-      #     subject-digest: ${{ steps.push-amd64.outputs.digest }}
-      #     push-to-registry: true
+  # - name: Docker metadata arm64
+  #   id: metadata-arm64
+  #   uses: docker/metadata-action@v5
+  #   with:
+  #     images: ${{ env.FULL_IMAGE_NAME }}
+  #     tags: |
+  #       type=ref,event=tag
+  #       type=raw,value=latest
+  #     flavor: |
+  #       latest=false
+  #       suffix=-arm64
 
-      # - name: Docker metadata arm64
-      #   id: metadata-arm64
-      #   uses: docker/metadata-action@v5
-      #   with:
-      #     images: ${{ env.FULL_IMAGE_NAME }}
-      #     tags: |
-      #       type=ref,event=tag
-      #       type=raw,value=latest
-      #     flavor: |
-      #       latest=false
-      #       suffix=-arm64
+  # - name: Build and push
+  #   id: push-arm64
+  #   uses: docker/build-push-action@v5
+  #   with:
+  #     context: ./example
+  #     platforms: linux/arm64
+  #     push: true
+  #     tags: ${{ steps.metadata-arm64.outputs.tags }}
 
-      # - name: Build and push
-      #   id: push-arm64
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: ./example
-      #     platforms: linux/arm64
-      #     push: true
-      #     tags: ${{ steps.metadata-arm64.outputs.tags }}
+  # - name: Generate Artifact Attestation
+  #   uses: actions/attest-build-provenance@v2
+  #   with:
+  #     subject-name: ${{ env.FULL_IMAGE_NAME }}
+  #     subject-digest: ${{ steps.push-arm64.outputs.digest }}
+  #     push-to-registry: true
 
-      # - name: Generate Artifact Attestation
-      #   uses: actions/attest-build-provenance@v2
-      #   with:
-      #     subject-name: ${{ env.FULL_IMAGE_NAME }}
-      #     subject-digest: ${{ steps.push-arm64.outputs.digest }}
-      #     push-to-registry: true
+  # - name: Docker metadata unified
+  #   id: metadata-unified
+  #   uses: docker/metadata-action@v5
+  #   with:
+  #     images: ${{ env.FULL_IMAGE_NAME }}
+  #     tags: |
+  #       type=ref,event=tag
+  #       type=raw,value=latest
+  #     flavor: |
+  #       latest=false
 
-      # - name: Docker metadata unified
-      #   id: metadata-unified
-      #   uses: docker/metadata-action@v5
-      #   with:
-      #     images: ${{ env.FULL_IMAGE_NAME }}
-      #     tags: |
-      #       type=ref,event=tag
-      #       type=raw,value=latest
-      #     flavor: |
-      #       latest=false
+  # - name: Create and push multi-platform manifest
+  #   run: |
+  #     tags_list_arm64=(${{ steps.metadata-arm64.outputs.tags }})
+  #     tags_list_amd64=(${{ steps.metadata-amd64.outputs.tags }})
+  #     tags_list_unified=(${{ steps.metadata-unified.outputs.tags }})
 
-      # - name: Create and push multi-platform manifest
-      #   run: |
-      #     tags_list_arm64=(${{ steps.metadata-arm64.outputs.tags }})
-      #     tags_list_amd64=(${{ steps.metadata-amd64.outputs.tags }})
-      #     tags_list_unified=(${{ steps.metadata-unified.outputs.tags }})
+  #     cmd=(docker buildx imagetools create)
+  #     for tag in "${tags_list_unified[@]}"; do
+  #       cmd+=(--tag "${tag}")
+  #     done
 
-      #     cmd=(docker buildx imagetools create)
-      #     for tag in "${tags_list_unified[@]}"; do
-      #       cmd+=(--tag "${tag}")
-      #     done
+  #     cmd+=("${tags_list_arm64[@]}")
+  #     cmd+=("${tags_list_amd64[@]}")
+  #     echo "Final command:"
+  #     echo "    ${cmd}"
 
-      #     cmd+=("${tags_list_arm64[@]}")
-      #     cmd+=("${tags_list_amd64[@]}")
-      #     echo "Final command:"
-      #     echo "    ${cmd}"
+  #     "${cmd[@]}"
 
-      #     "${cmd[@]}"
+  # - name: Create and push multi-platform manifest
+  #   run: |
+  #     echo "waiting for registry to update"
+  #     sleep 30
+  #     tags_list_arm64=(${{ steps.metadata-arm64.outputs.tags }})
+  #     tags_list_amd64=(${{ steps.metadata-amd64.outputs.tags }})
+  #     tags_list_unified=(${{ steps.metadata-unified.outputs.tags }})
 
-      # - name: Create and push multi-platform manifest
-      #   run: |
-      #     echo "waiting for registry to update"
-      #     sleep 30
-      #     tags_list_arm64=(${{ steps.metadata-arm64.outputs.tags }})
-      #     tags_list_amd64=(${{ steps.metadata-amd64.outputs.tags }})
-      #     tags_list_unified=(${{ steps.metadata-unified.outputs.tags }})
-
-      #     docker manifest create "${tags_list_unified[@]}" "${tags_list_arm64[@]}" "${tags_list_amd64[@]}"
-      #     docker manifest annotate "${tags_list_unified[@]}" "${tags_list_arm64[@]}" --arch arm64
-      #     docker manifest annotate "${tags_list_unified[@]}" "${tags_list_amd64[@]}" --arch amd64
+  #     docker manifest create "${tags_list_unified[@]}" "${tags_list_arm64[@]}" "${tags_list_amd64[@]}"
+  #     docker manifest annotate "${tags_list_unified[@]}" "${tags_list_arm64[@]}" --arch arm64
+  #     docker manifest annotate "${tags_list_unified[@]}" "${tags_list_amd64[@]}" --arch amd64
 
   # release:
   # needs: [push]
