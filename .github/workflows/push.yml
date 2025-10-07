@@ -117,7 +117,7 @@ jobs:
           echo "docker-platform-arch-${{ matrix.docker-platform-arch }}-tags=${tags[@]}" >> $GITHUB_OUTPUT
 
   build_multi_arch_image:
-    needs: [build_images]
+    needs: [add_version_information, build_images]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -145,21 +145,21 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Docker metadata unified
-        id: metadata-unified
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.FULL_IMAGE_NAME }}
           tags: |
-            type=ref,event=tag
+            type=raw,value=${{ needs.add_version_information.outputs['tag_version'] }}
             type=raw,value=latest
           flavor: |
             latest=false
 
       - name: Create and push multi-platform manifest
         run: |
-          tags_list_amd64=(${{ needs.build_images.outputs['docker-platform-arch-amd64'] }})
-          tags_list_arm64=(${{ needs.build_images.outputs['docker-platform-arch-arm64'] }})
-          tags_list_unified=(${{ steps.metadata-unified.outputs.tags }})
+          tags_list_amd64=(${{ needs.build_images.outputs['docker-platform-arch-amd64-tags'] }})
+          tags_list_arm64=(${{ needs.build_images.outputs['docker-platform-arch-arm64-tags'] }})
+          tags_list_unified=(${{ steps.meta.outputs.tags }})
 
           cmd=(docker buildx imagetools create)
           for tag in "${tags_list_unified[@]}"; do
@@ -169,7 +169,7 @@ jobs:
           cmd+=("${tags_list_amd64[@]}")
           cmd+=("${tags_list_arm64[@]}")
           echo "Final command:"
-          echo "    ${cmd}"
+          echo "    '${cmd}'"
 
           "${cmd[@]}"
 
