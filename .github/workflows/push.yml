@@ -101,6 +101,7 @@ jobs:
           platforms: linux/${{ matrix.docker-platform-arch }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+          provenance: false # Disable provenance to avoid unknown/unknown
 
       - name: Generate Artifact Attestation
         uses: actions/attest-build-provenance@v2
