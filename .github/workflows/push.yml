@@ -168,6 +168,7 @@ jobs:
 
       - name: Inspect image
         run: |
+          tags_list_unified=(${{ steps.meta.outputs.tags }})
           echo "Inspecting images"
           for tag in "${tags_list_unified[@]}"; do
             echo "docker buildx imagetools inspect ${tag}"
