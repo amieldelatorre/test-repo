@@ -172,7 +172,7 @@ jobs:
 
           "${cmd[@]}"
 
-  new_tag:
+  # new_tag:
 
 
       # - name: Docker metadata amd64
