@@ -187,4 +187,4 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
 
-          git tag -a ${{ needs.add_version_information.outputs['tag_version'] }} -m "New tag from branch ${{ github.ref_name }} && git push origin ${{ needs.add_version_information.outputs['tag_version'] }}"
+          git tag -a ${{ needs.add_version_information.outputs['tag_version'] }} -m "New tag from branch ${{ github.ref_name }}" && git push origin ${{ needs.add_version_information.outputs['tag_version'] }}
