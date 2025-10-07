@@ -100,12 +100,12 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           provenance: false # Disable provenance to avoid unknown/unknown
 
-      - name: Generate Artifact Attestation
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: ${{ env.FULL_IMAGE_NAME }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
+      # - name: Generate Artifact Attestation
+      #   uses: actions/attest-build-provenance@v2
+      #   with:
+      #     subject-name: ${{ env.FULL_IMAGE_NAME }}
+      #     subject-digest: ${{ steps.push.outputs.digest }}
+      #     push-to-registry: true
 
       - name: output
         id: output
