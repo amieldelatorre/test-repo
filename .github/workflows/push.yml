@@ -111,7 +111,10 @@ jobs:
 
       - name: output
         id: output
-        run: echo "docker-platform-arch-${{ matrix.docker-platform-arch }}-tags=${{ steps.meta.outputs.tags }}" >> $GITHUB_OUTPUT
+        run: |
+          tags=(${{ steps.meta.outputs.tags }})
+          echo "${tags[@]}"
+          echo "docker-platform-arch-${{ matrix.docker-platform-arch }}-tags=${tags[@]}" >> $GITHUB_OUTPUT
 
   build_multi_arch_image:
     needs: [build_images]
